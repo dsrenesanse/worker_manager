@@ -10,6 +10,7 @@ dependencies:
   async: ^2.11.0
   collection: ^1.17.1
   meta: ^1.9.1
+  web: ^1.1.1
 
 dev_dependencies:
   test: ^1.24.3

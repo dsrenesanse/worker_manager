@@ -1,5 +1,5 @@
-import 'dart:html';
 import 'dart:math';
+import 'package:web/web.dart' as web;
 
 /// Returns the number of available processors for concurrent execution.
 ///
@@ -10,7 +10,7 @@ import 'dart:math';
 
 int get numberOfProcessors {
   // Get the hardware concurrency, defaulting to 1 if not available
-  final concurrency = window.navigator.hardwareConcurrency ?? 1;
+  final concurrency = web.window.navigator.hardwareConcurrency;
 
   // Subtract 1 and ensure the result is at least 1
   return max(concurrency - 1, 1);
