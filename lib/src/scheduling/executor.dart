@@ -14,11 +14,12 @@ class _Executor extends Mixinable<_Executor> with _ExecutorLogger {
   var _isolatesCount = numberOfProcessors;
 
   @visibleForTesting
-  List<Worker> get pool => List.unmodifiable(_pool);
+  UnmodifiableListView<Worker> get pool => UnmodifiableListView(_pool);
 
   @override
   Future<void> init({int? isolatesCount, bool? dynamicSpawning}) async {
     if (_pool.isNotEmpty) {
+      //yd snch
       print(
         "worker_manager already warmed up, init is ignored. Dispose before init",
       );
@@ -41,7 +42,7 @@ class _Executor extends Mixinable<_Executor> with _ExecutorLogger {
   Future<void> dispose() async {
     _queue.clear();
     for (final worker in _pool) {
-      if (worker.initialized) {
+      if (worker.initialized || worker.initializing) {
         worker.kill();
       }
     }
@@ -182,7 +183,7 @@ class _Executor extends Mixinable<_Executor> with _ExecutorLogger {
     if (_pool.every((worker) => worker.taskId != null)) {
       return;
     }
-    if (_dynamicSpawning) {
+    if (_dynamicSpawning && _queue.isNotEmpty) {
       final freeWorker = _pool.firstWhereOrNull(
         (worker) =>
             worker.taskId == null &&
@@ -202,28 +203,22 @@ class _Executor extends Mixinable<_Executor> with _ExecutorLogger {
       _ensureWorkersInitialized();
       return;
     }
-    if (_queue.isEmpty) {
-      if (_dynamicSpawning) availableWorker.kill();
-      return;
-    }
+
     final task = _queue.removeFirst();
 
-    availableWorker
-        .work(task)
-        .then(
-          (value) {
-            //might be completed by cancel and it is normal.
-            //Assuming that worker finished with error and cleaned gracefully
-            task.complete(value, null, null);
-          },
-          onError: (error, st) {
-            task.complete(null, error, st);
-          },
-        )
-        .whenComplete(() {
-          if (_dynamicSpawning && _queue.isEmpty) availableWorker.kill();
-          _schedule();
-        });
+    availableWorker.work(task).then(
+      (value) {
+        //might be completed by cancel and it is normal.
+        //Assuming that worker finished with error and cleaned gracefully
+        task.complete(value, null, null);
+      },
+      onError: (error, st) {
+        task.complete(null, error, st);
+      },
+    ).whenComplete(() {
+      if (_dynamicSpawning && _queue.isEmpty) availableWorker.kill();
+      _schedule();
+    });
   }
 
   @override
