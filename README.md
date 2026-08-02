@@ -1,10 +1,3 @@
-# Warning
-Once upon the time, this package was deleted by hackers that works for https://miviva.com
-I have no idea why, but i suppose they used dev token brute force.
-This is the reason why package turns out to be forked from some random person on github, despite the fact that I am the original creator and distibuter of this free and open source project.
-This is the only state of repository i could get at the time i wrote a request to github support.
-If you interested in such destructive behavior from https://miviva.com, you can reach me through email - dsrenesanse@icloud.com, so i can provide clear evidence from github activity logs. Thank you and be very caution with dev tokens, ssh is the only way.
-
 # Worker Manager
 
 Worker Manager is a powerful and easy-to-use library that helps you efficiently manage CPU-intensive tasks in your Flutter applications. It offers several advantages over traditional async programming or the built-in compute method. Note that the functions you are passing should either be static methods, globally defined functions or lambdas to ensure they are accessible from other isolates.
